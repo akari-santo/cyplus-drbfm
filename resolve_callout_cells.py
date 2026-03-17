@@ -339,8 +339,10 @@ def resolve_callout_cells(xlsx_path: str) -> dict:
         adj2 = adj.get('adj2', -8333)   # デフォルト: -8.333% 上 (上方向)
 
         # 先端のアンカー基準オフセット (EMU)
-        dx = col_off + round(adj1 / 100000 * cx)
-        dy = row_off + round(adj2 / 100000 * cy)
+        # adj1/adj2 は形状中心からのオフセット (wedgeRectCallout の OOXML 仕様)
+        # tip = center + adj/100000 * size = (0.5 + adj/100000) * size from top-left
+        dx = col_off + round((0.5 + adj1 / 100000) * cx)
+        dy = row_off + round((0.5 + adj2 / 100000) * cy)
 
         # EMUオフセット → セル番号
         tip_col = emu_offset_to_col(anchor_col, dx, col_widths, default_col_emu)
